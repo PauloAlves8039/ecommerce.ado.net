@@ -24,14 +24,14 @@ namespace eCommerce.API.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var usuario = _repository.Get();
+            var usuario = _repository.Get(id);
 
             if (usuario == null)
             {
                 return NotFound();
             }
 
-            return Ok();
+            return Ok(usuario);
         }
 
         [HttpPost]
