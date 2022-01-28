@@ -17,7 +17,39 @@ namespace eCommerce.API.Repositories
 
         public List<Usuario> Get()
         {
-            return _db;
+            List<Usuario> usuarios = new List<Usuario>();
+            try
+            {
+                SqlCommand command = new SqlCommand();
+                command.CommandText = "SELECT * FROM Usuarios";
+                command.Connection = (SqlConnection)_connection;
+
+                _connection.Open();
+
+                SqlDataReader dataReader = command.ExecuteReader();
+                
+                while (dataReader.Read())
+                {
+                    Usuario usuario = new Usuario();
+                    usuario.Id = dataReader.GetInt32("Id");
+                    usuario.Nome = dataReader.GetString("Nome");
+                    usuario.Email = dataReader.GetString("Email");
+                    usuario.Sexo = dataReader.GetString("Sexo");
+                    usuario.RG = dataReader.GetString("RG");
+                    usuario.CPF = dataReader.GetString("CPF");
+                    usuario.NomeMae = dataReader.GetString("NomeMae");
+                    usuario.SituacaoCadastro = dataReader.GetString("SituacaoCadastro");
+                    usuario.DataCadastro = dataReader.GetDateTimeOffset(8);
+
+                    usuarios.Add(usuario);
+                }
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return usuarios;
         }
 
         public Usuario Get(int id)
