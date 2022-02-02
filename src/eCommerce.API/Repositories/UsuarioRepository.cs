@@ -1,4 +1,5 @@
 ﻿using eCommerce.API.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -129,6 +130,10 @@ namespace eCommerce.API.Repositories
                 }
 
                 return usuarios[usuarios.Keys.First()];
+            }
+            catch (Exception e) 
+            {
+                return null;
             }
             finally
             {
