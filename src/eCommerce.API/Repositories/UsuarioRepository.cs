@@ -231,11 +231,14 @@ namespace eCommerce.API.Repositories
 
         public void Update(Usuario usuario)
         {
+            _connection.Open();
+            SqlTransaction transaction = (SqlTransaction)_connection.BeginTransaction();
             try
             {
                 SqlCommand command = new SqlCommand();
                 command.CommandText = "UPDATE Usuarios SET Nome = @Nome, Email = @Email, Sexo = @Sexo, RG = @RG, CPF = @CPF, NomeMae = @NomeMae, SituacaoCadastro = @SituacaoCadastro, DataCadastro=@DataCadastro WHERE Id = @Id";
                 command.Connection = (SqlConnection)_connection;
+                command.Transaction = transaction;
 
                 command.Parameters.AddWithValue("@Nome", usuario.Nome);
                 command.Parameters.AddWithValue("@Email", usuario.Email);
@@ -248,10 +251,37 @@ namespace eCommerce.API.Repositories
 
                 command.Parameters.AddWithValue("@Id", usuario.Id);
 
-                _connection.Open();
+                command = new SqlCommand();
+                command.Connection = (SqlConnection)_connection;
+                command.Transaction = transaction;
+
+                command.CommandText = "UPDATE Contatos SET UsuarioId = @UsuarioId, Telefone = @Telefone, Celular = @Celular WHERE Id = @Id";
+
+                command.Parameters.AddWithValue("@UsuarioId", usuario.Id);
+                command.Parameters.AddWithValue("@Telefone", usuario.Contato.Telefone);
+                command.Parameters.AddWithValue("@Celular", usuario.Contato.Celular);
+
+                command.Parameters.AddWithValue("@Id", usuario.Contato.Id);
+
                 command.ExecuteNonQuery();
+
+                transaction.Commit();
             }
-            finally 
+            catch (Exception e) 
+            {
+                transaction.Rollback();
+                try
+                {
+
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+                throw new Exception("Erro não conseguimos atualizar os dados!");
+            }
+            finally
             {
                 _connection.Close();
             }
